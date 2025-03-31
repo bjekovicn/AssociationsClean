@@ -1,0 +1,63 @@
+﻿# Docker Compose configuration file
+# This defines all services and volumes for the Associations application
+
+version: '3.8'  # Docker Compose file format version
+
+services:
+  # ASP.NET Core API application service
+  associationsclean:
+    build:
+      context: .  # Build context is the current directory
+      dockerfile: AssociationsClean.API/Dockerfile  # Path to the Dockerfile for this service
+    container_name: associations.api  # Custom container name for easier identification
+    depends_on:
+      - postgres_db  # Ensures that the postgres_db service starts before this service
+    environment:
+      # Setting environment variables for the application
+      - ASPNETCORE_ENVIRONMENT=Development  # Runs the application in Development mode
+      - ConnectionStrings__DefaultConnection=Host=postgres_db;Port=5432;Database=associations_db;Username=postgres;Password=postgres  # Connection string to the database using Docker network hostname
+    ports:
+      - "8080:8080"  # Maps host port 8080 to container port 8080 (HTTP)
+      - "8081:8081"  # Maps host port 8081 to container port 8081 (HTTPS)
+    networks:
+      - associations-network  # Connects to the custom Docker network
+    # Optional health check to verify application is running properly
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL database service
+  postgres_db:
+    image: postgres:15  # Uses the official PostgreSQL 15 image from Docker Hub
+    container_name: associations.database  # Custom container name for easier identification
+    restart: always  # Ensures the container restarts automatically if it crashes
+    environment:
+      # Setting PostgreSQL environment variables
+      POSTGRES_DB: associations_db  # Database name to create
+      POSTGRES_USER: postgres  # Username for database access
+      POSTGRES_PASSWORD: postgres  # Password for database access
+    ports:
+      - "5433:5432"  # Maps host port 5433 to container port 5432 (PostgreSQL default port)
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # Persists database data in a named volume
+    networks:
+      - associations-network  # Connects to the custom Docker network
+    # Optional health check to verify database is running properly
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# Defines all networks used by the services
+networks:
+  associations-network:
+    driver: bridge  # Standard bridge network for container communication
+
+# Defines all volumes used by the services
+volumes:
+  pgdata:  # Named volume for PostgreSQL data persistence
+    # No specific configuration needed, Docker will manage this volume
