@@ -1,4 +1,4 @@
-﻿namespace AssociationsClean.Domain
+﻿namespace AssociationsClean.Domain.Features.Categories
 {
     public sealed class Category
     {

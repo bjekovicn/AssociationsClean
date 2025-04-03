@@ -1,10 +1,9 @@
-﻿
-
-using AssociationsClean.Domain;
-using AssociationsClean.Domain.Abstractions;
+﻿using AssociationsClean.Domain.Abstractions;
 using AssociationsClean.Application.Abstractions.Data;
 using AssociationsClean.Application.Abstractions.Messaging;
 using Dapper;
+using AssociationsClean.Domain.Features.Categories;
+using AssociationsClean.Domain.Bookings;
 
 namespace Associations.Application.Features.Categories.GetCategories
 {
@@ -27,6 +26,10 @@ namespace Associations.Application.Features.Categories.GetCategories
 
             var category = await connection.QueryFirstOrDefaultAsync<Category>(sql, new { Id = request.Id });
 
+            if (category == null)
+            {
+                return Result.Failure<Category>(CategoryErrors.NotFound);
+            }
 
             return category;
         }

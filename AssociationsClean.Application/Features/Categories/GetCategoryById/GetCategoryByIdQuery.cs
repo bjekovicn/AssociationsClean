@@ -1,8 +1,5 @@
-﻿
-
-
-using AssociationsClean.Domain;
-using AssociationsClean.Application.Abstractions.Messaging;
+﻿using AssociationsClean.Application.Abstractions.Messaging;
+using AssociationsClean.Domain.Features.Categories;
 
 namespace Associations.Application.Features.Categories.GetCategories
 {
