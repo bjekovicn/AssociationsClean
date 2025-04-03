@@ -22,7 +22,8 @@ namespace Associations.Application.Features.Categories.GetCategories
         {
             using var connection=_sqlConnectionFactory.CreateConnection();
 
-            var sql = "SELECT Id, Name, Photo FROM Categories WHERE Id = @Id";
+            var sql = "SELECT * FROM public.\"Categories\" WHERE \"Id\" = @Id";
+
 
             var category = await connection.QueryFirstOrDefaultAsync<Category>(sql, new { Id = request.Id });
 
