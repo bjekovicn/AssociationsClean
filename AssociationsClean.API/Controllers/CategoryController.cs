@@ -45,7 +45,7 @@ namespace AssociationsClean.API.Controllers
 
             if (result.IsFailure) return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(GetCategoryById), new { name=command.categoryName,photo=command.categoryPhoto }, command);
+            return CreatedAtAction(nameof(CreateCategory), new { name = command.categoryName, photo = command.categoryPhoto }, command);
         }
     }
 }

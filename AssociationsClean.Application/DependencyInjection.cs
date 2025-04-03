@@ -1,5 +1,6 @@
 ﻿
 
+using AssociationsClean.Application.Abstractions.Behaviors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AssociationsClean.Application
@@ -13,6 +14,7 @@ namespace AssociationsClean.Application
                 configuration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
 
                 //ADD BEHAVIORS
+                configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
             });
 
 
