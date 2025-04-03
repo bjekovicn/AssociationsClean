@@ -1,6 +1,8 @@
-﻿using Associations.Application.Features.Categories.GetCategories;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+
+using Associations.Application.Features.Categories.GetCategories;
+using AssociationsClean.Application.Features.Categories.GetAllCategories;
 
 namespace AssociationsClean.API.Controllers
 {
@@ -16,6 +18,14 @@ namespace AssociationsClean.API.Controllers
         }
 
         
+        [HttpGet()]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            var query = new GetAllCategoriesQuery();
+            var result = await _mediator.Send(query);
+
+            return Ok(result.Value); 
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(int id)
@@ -23,13 +33,9 @@ namespace AssociationsClean.API.Controllers
             var query = new GetCategoryByIdQuery(id);
             var result = await _mediator.Send(query);
 
-            if (result.IsFailure)
-            {
-                return NotFound(result.Error);
-            }
+            if (result.IsFailure) return NotFound(result.Error);
 
             return Ok(result.Value);
         }
-
     }
 }
