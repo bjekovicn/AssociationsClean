@@ -17,7 +17,6 @@ namespace AssociationsClean.API.Controllers
             _mediator = mediator;
         }
 
-        
         [HttpGet()]
         public async Task<IActionResult> GetAllCategories()
         {

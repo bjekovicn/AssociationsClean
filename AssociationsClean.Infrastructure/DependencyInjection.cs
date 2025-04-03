@@ -1,10 +1,11 @@
-﻿
-using AssociationsClean.Infrastructure.Data;
-using AssociationsClean.Infrastructure.Persistence;
-
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+
+using AssociationsClean.Infrastructure.Data;
+using AssociationsClean.Infrastructure.Persistence;
+using AssociationsClean.Domain.Features.Categories;
+using AssociationsClean.Infrastructure.Features.Categories;
 using AssociationsClean.Application.Shared.Abstractions.Data;
 
 namespace AssociationsClean.Infrastructure
@@ -24,6 +25,8 @@ namespace AssociationsClean.Infrastructure
 
             services.AddSingleton<ISqlConnectionFactory>(_ =>
                 new SqlConnectionFactory(connectionString));
+
+            services.AddScoped<ICategoryRepository,CategoryRepository>();
 
             return services;
         }
