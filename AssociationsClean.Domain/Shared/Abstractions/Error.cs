@@ -1,4 +1,4 @@
-﻿namespace AssociationsClean.Domain.Abstractions;
+﻿namespace AssociationsClean.Domain.Shared.Abstractions;
 
 public record Error(string Code, string Name)
 {

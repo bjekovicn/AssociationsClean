@@ -1,9 +1,9 @@
-﻿using AssociationsClean.Domain.Abstractions;
-using AssociationsClean.Application.Abstractions.Data;
-using AssociationsClean.Application.Abstractions.Messaging;
-using Dapper;
+﻿using Dapper;
 using AssociationsClean.Domain.Features.Categories;
 using AssociationsClean.Domain.Bookings;
+using AssociationsClean.Domain.Shared.Abstractions;
+using AssociationsClean.Application.Shared.Abstractions.Data;
+using AssociationsClean.Application.Shared.Abstractions.Messaging;
 
 namespace Associations.Application.Features.Categories.GetCategories
 {

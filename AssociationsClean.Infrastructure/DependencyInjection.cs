@@ -1,11 +1,11 @@
 ﻿
 using AssociationsClean.Infrastructure.Data;
 using AssociationsClean.Infrastructure.Persistence;
-using AssociationsClean.Application.Abstractions.Data;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using AssociationsClean.Application.Shared.Abstractions.Data;
 
 namespace AssociationsClean.Infrastructure
 {

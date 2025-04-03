@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using AssociationsClean.Domain.Abstractions;
-namespace AssociationsClean.Application.Abstractions.Messaging;
+using AssociationsClean.Domain.Shared.Abstractions;
+namespace AssociationsClean.Application.Shared.Abstractions.Messaging;
 
 public interface ICommand : IRequest<Result>, IBaseCommand
 {

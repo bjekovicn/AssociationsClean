@@ -1,4 +1,4 @@
-﻿using AssociationsClean.Application.Exceptions;
+﻿using AssociationsClean.Application.Shared.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssociationsClean.API.Middleware;

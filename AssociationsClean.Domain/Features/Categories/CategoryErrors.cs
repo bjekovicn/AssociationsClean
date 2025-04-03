@@ -1,4 +1,4 @@
-﻿using AssociationsClean.Domain.Abstractions;
+﻿using AssociationsClean.Domain.Shared.Abstractions;
 
 namespace AssociationsClean.Domain.Bookings;
 

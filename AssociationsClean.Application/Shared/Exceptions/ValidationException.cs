@@ -1,4 +1,4 @@
-﻿namespace AssociationsClean.Application.Exceptions;
+﻿namespace AssociationsClean.Application.Shared.Exceptions;
 
 public sealed class ValidationException : Exception
 {

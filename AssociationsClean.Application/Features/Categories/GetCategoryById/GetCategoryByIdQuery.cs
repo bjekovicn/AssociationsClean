@@ -1,4 +1,4 @@
-﻿using AssociationsClean.Application.Abstractions.Messaging;
+﻿using AssociationsClean.Application.Shared.Abstractions.Messaging;
 using AssociationsClean.Domain.Features.Categories;
 
 namespace Associations.Application.Features.Categories.GetCategories

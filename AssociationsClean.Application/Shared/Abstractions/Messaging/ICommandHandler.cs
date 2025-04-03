@@ -1,7 +1,7 @@
-﻿using AssociationsClean.Domain.Abstractions;
+﻿using AssociationsClean.Domain.Shared.Abstractions;
 using MediatR;
 
-namespace AssociationsClean.Application.Abstractions.Messaging;
+namespace AssociationsClean.Application.Shared.Abstractions.Messaging;
 
 public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Result>
     where TCommand : ICommand

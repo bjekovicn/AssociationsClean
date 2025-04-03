@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using AssociationsClean.Application.Abstractions.Data;
+using AssociationsClean.Application.Shared.Abstractions.Data;
 using Npgsql;
 
 namespace AssociationsClean.Infrastructure.Data;
