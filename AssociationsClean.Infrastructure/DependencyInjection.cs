@@ -7,6 +7,7 @@ using AssociationsClean.Infrastructure.Persistence;
 using AssociationsClean.Domain.Features.Categories;
 using AssociationsClean.Infrastructure.Features.Categories;
 using AssociationsClean.Application.Shared.Abstractions.Data;
+using AssociationsClean.Domain.Shared.Abstractions;
 
 namespace AssociationsClean.Infrastructure
 {
@@ -27,6 +28,8 @@ namespace AssociationsClean.Infrastructure
                 new SqlConnectionFactory(connectionString));
 
             services.AddScoped<ICategoryRepository,CategoryRepository>();
+
+            services.AddScoped(sp=> (IUnitOfWork)sp.GetRequiredService<AppDbContext>());
 
             return services;
         }

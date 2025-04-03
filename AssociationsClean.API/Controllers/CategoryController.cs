@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Associations.Application.Features.Categories.GetCategories;
 using AssociationsClean.Application.Features.Categories.GetAllCategories;
+using AssociationsClean.Application.Features.Categories.CreateCategory;
 
 namespace AssociationsClean.API.Controllers
 {
@@ -35,6 +36,16 @@ namespace AssociationsClean.API.Controllers
             if (result.IsFailure) return NotFound(result.Error);
 
             return Ok(result.Value);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            if (result.IsFailure) return BadRequest(result.Error);
+
+            return CreatedAtAction(nameof(GetCategoryById), new { name=command.categoryName,photo=command.categoryPhoto }, command);
         }
     }
 }
