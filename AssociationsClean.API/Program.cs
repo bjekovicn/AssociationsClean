@@ -1,6 +1,8 @@
 using Associations.API.Extensions;
 using AssociationsClean.Application;
 using AssociationsClean.Infrastructure;
+using AssociationsClean.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +14,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-
+builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("S3Settings"));
 
 var app = builder.Build();
 
