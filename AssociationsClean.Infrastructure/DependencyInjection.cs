@@ -4,10 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 using AssociationsClean.Infrastructure.Data;
 using AssociationsClean.Infrastructure.Persistence;
-using AssociationsClean.Domain.Features.Categories;
 using AssociationsClean.Infrastructure.Features.Categories;
 using AssociationsClean.Application.Shared.Abstractions.Data;
 using AssociationsClean.Domain.Shared.Abstractions;
+using AssociationsClean.Application.Features.Categories;
 
 namespace AssociationsClean.Infrastructure
 {
@@ -27,7 +27,8 @@ namespace AssociationsClean.Infrastructure
             services.AddSingleton<ISqlConnectionFactory>(_ =>
                 new SqlConnectionFactory(connectionString));
 
-            services.AddScoped<ICategoryRepository,CategoryRepository>();
+            services.AddScoped<ICategoryCommandRepository,CategoryCommandRepository>();
+            services.AddScoped<ICategoryQueryRepository,CategoryQueryRepository>();
 
             services.AddScoped(sp=> (IUnitOfWork)sp.GetRequiredService<AppDbContext>());
 

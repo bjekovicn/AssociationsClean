@@ -2,30 +2,23 @@
 
 using AssociationsClean.Domain.Features.Categories;
 using AssociationsClean.Domain.Shared.Abstractions;
-using AssociationsClean.Application.Shared.Abstractions.Data;
 using AssociationsClean.Application.Shared.Abstractions.Messaging;
-using Dapper;
 
 namespace AssociationsClean.Application.Features.Categories.GetAllCategories
 {
     internal sealed class GetAllCategoriesQueryHandler : IQueryHandler<GetAllCategoriesQuery, IReadOnlyList<Category>>
     {
-        private readonly ISqlConnectionFactory _sqlConnectionFactory;
+        private readonly ICategoryQueryRepository categoryQueryRepository;
 
-        public GetAllCategoriesQueryHandler(ISqlConnectionFactory connectionFactory)
+        public GetAllCategoriesQueryHandler(ICategoryQueryRepository categoryQueryRepository)
         {
-            this._sqlConnectionFactory = connectionFactory;
+            this.categoryQueryRepository = categoryQueryRepository;
         }
 
         public async Task<Result<IReadOnlyList<Category>>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
         {
-            using var connection = _sqlConnectionFactory.CreateConnection();
-
-            var sql = "SELECT * FROM public.\"Categories\"";
-
-            var categories = await connection.QueryAsync<Category>(sql);
-
-            return Result.Success<IReadOnlyList<Category>>(categories.AsList());
+            var categories = await categoryQueryRepository.GetAllAsync();
+            return Result.Success<IReadOnlyList<Category>>(categories);
         }
     }
 }

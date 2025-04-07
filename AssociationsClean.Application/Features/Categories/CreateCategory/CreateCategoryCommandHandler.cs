@@ -9,9 +9,9 @@ namespace AssociationsClean.Application.Features.Categories.CreateCategory
     internal sealed class CreateCategoryCommandHandler : ICommandHandler<CreateCategoryCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryCommandRepository _categoryRepository;
 
-        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryRepository categoryRepository)
+        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, ICategoryCommandRepository categoryRepository)
         {
             _unitOfWork = unitOfWork;   
             _categoryRepository = categoryRepository;
@@ -20,7 +20,7 @@ namespace AssociationsClean.Application.Features.Categories.CreateCategory
         public async Task<Result> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = new Category(request.categoryName, request.categoryPhoto);
-            _categoryRepository.Create(category);
+            await _categoryRepository.AddAsync(category);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

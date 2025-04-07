@@ -13,5 +13,30 @@
         }
 
         private Category() { }
+
+        public void ChangeName(string newName)
+        {
+            if (string.IsNullOrWhiteSpace(newName))
+            {
+                throw new ArgumentException("Category name cannot be empty.", nameof(newName));
+            }
+
+            if (newName.Length < 3)
+            {
+                throw new ArgumentException("Category name must be at least 3 characters long.", nameof(newName));
+            }
+
+            Name = newName; 
+        }
+
+        public void ChangePhoto(string? newPhoto)
+        {
+            if (newPhoto != null && !Uri.IsWellFormedUriString(newPhoto, UriKind.Absolute))
+            {
+                throw new ArgumentException("The photo URL is not valid.", nameof(newPhoto));
+            }
+
+            Photo = newPhoto;
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace AssociationsClean.Application
 
                 //ADD BEHAVIORS
                 configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
+
+                configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
             });
 
 

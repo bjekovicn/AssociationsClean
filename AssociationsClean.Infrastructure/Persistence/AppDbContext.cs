@@ -1,5 +1,5 @@
 ﻿
-using AssociationsClean.Application.Exceptions;
+using AssociationsClean.Application.Shared.Exceptions;
 using AssociationsClean.Domain.Features.Categories;
 using AssociationsClean.Domain.Shared.Abstractions;
 using Microsoft.EntityFrameworkCore;
