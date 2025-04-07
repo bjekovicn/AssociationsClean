@@ -1,9 +1,7 @@
-﻿
-
-using AssociationsClean.Domain;
+﻿using AssociationsClean.Domain.Features.Categories;
 using Microsoft.EntityFrameworkCore;
 
-namespace AssociationsClean.Infrastructure.Configurations
+namespace AssociationsClean.Infrastructure.Features.Categories
 {
     internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
