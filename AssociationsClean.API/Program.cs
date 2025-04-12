@@ -1,8 +1,12 @@
+using Amazon.S3;
 using Associations.API.Extensions;
 using AssociationsClean.Application;
+using AssociationsClean.Application.Shared.Abstractions.Storage;
 using AssociationsClean.Infrastructure;
 using AssociationsClean.Infrastructure.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +18,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("S3Settings"));
+builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("AWS"));
+
 
 var app = builder.Build();
 
@@ -30,6 +35,22 @@ if (app.Environment.IsDevelopment())
     });
     app.ApplyMigrations();
 }
+
+app.MapPost("/images", async (
+    [FromForm] IFormFile file,
+    IStorageService storageService
+) =>
+{
+    if (file == null || file.Length == 0)
+        return Results.BadRequest("No file uploaded.");
+
+    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+    using var stream = file.OpenReadStream();
+
+    var url = await storageService.UploadFileAsync(stream, fileName, file.ContentType);
+
+    return Results.Ok(new { FileName = fileName, Url = url });
+}).DisableAntiforgery();
 
 app.UseHttpsRedirection();
 

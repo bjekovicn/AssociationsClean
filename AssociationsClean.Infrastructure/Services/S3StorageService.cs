@@ -22,10 +22,10 @@ namespace AssociationsClean.Infrastructure.Services
         {
             var uploadRequest = new TransferUtilityUploadRequest
             {
-                InputStream = fileStream,
-                Key = fileName,
                 BucketName = _s3Settings.BucketName,
-                ContentType = contentType
+                Key = fileName,
+                InputStream = fileStream,
+                ContentType = contentType,
             };
 
             var fileTransferUtility = new TransferUtility(_s3Client);
