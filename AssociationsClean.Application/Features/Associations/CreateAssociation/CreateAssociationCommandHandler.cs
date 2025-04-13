@@ -10,29 +10,39 @@ namespace AssociationsClean.Application.Features.Associations.CreateAssociation
     internal sealed class CreateAssociationCommandHandler : ICommandHandler<CreateAssociationCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IAssociationCommandRepository _associationRepository;
-        private readonly ICategoryQueryRepository _categoryRepository;
+        private readonly ICategoryQueryRepository _categoryQueryRepository;
+        private readonly IAssociationQueryRepository _associationQueryRepository;
+        private readonly IAssociationCommandRepository _associationCommandRepository;
 
         public CreateAssociationCommandHandler(
             IUnitOfWork unitOfWork, 
-            IAssociationCommandRepository associationRepository,
-            ICategoryQueryRepository categoryRepository)
+            ICategoryQueryRepository categoryCommandRepository,
+            IAssociationQueryRepository associationQueryRepository,
+            IAssociationCommandRepository associationCommandRepository
+            )
         {
             _unitOfWork = unitOfWork;
-            _associationRepository = associationRepository;
-            _categoryRepository = categoryRepository;
+            _categoryQueryRepository = categoryCommandRepository;
+            _associationQueryRepository = associationQueryRepository;
+            _associationCommandRepository = associationCommandRepository;
         }
 
         public async Task<Result> Handle(CreateAssociationCommand request, CancellationToken cancellationToken)
         {
-            var categoryExists = await _categoryRepository.ExistsAsync(request.CategoryId);
+            var categoryExists = await _categoryQueryRepository.ExistsAsync(request.CategoryId);
             if (!categoryExists)
             {
                 return Result.Failure(AssociationErrors.CategoryNotFound);
             }
 
+            var associationExists = await _associationQueryRepository.ExistsAsync(request.CategoryId, request.AssociationName);
+            if (associationExists)
+            {
+                return Result.Failure(AssociationErrors.DuplicateNameInCategory);
+            }
+
             var association = new Association(request.AssociationName, request.Description, request.CategoryId);
-            await _associationRepository.AddAsync(association);
+            await _associationCommandRepository.AddAsync(association);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result.Success();

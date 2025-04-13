@@ -15,14 +15,12 @@ namespace AssociationsClean.Infrastructure.Features.Categories
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
+
         public async Task<bool> ExistsAsync(int id)
         {
             using var connection = _sqlConnectionFactory.CreateConnection();
-            var sql = "SELECT COUNT(1) FROM public.\"Categories\" WHERE \"Id\" = @Id";
-
-            var count = await connection.ExecuteScalarAsync<int>(sql, new { Id = id });
-
-            return count > 0;
+            var sql = "SELECT EXISTS(SELECT 1 FROM public.\"Categories\" WHERE \"Id\" = @Id)";
+            return await connection.ExecuteScalarAsync<bool>(sql, new { Id = id });
         }
 
         public async Task<IReadOnlyList<Category>> GetAllAsync()
