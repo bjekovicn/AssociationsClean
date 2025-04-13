@@ -60,7 +60,8 @@ namespace AssociationsClean.API.Controllers
         /// <response code="201">Returns the newly created category</response>
         /// <response code="400">If the category data is invalid</response>
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryCommand command)
         {
             var result = await _mediator.Send(command);
 
