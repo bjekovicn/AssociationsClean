@@ -27,7 +27,7 @@ namespace AssociationsClean.Domain.Features.Associations
             CategoryId = newCategoryId;
         }
 
-        private void ChangeName(string name)
+        public void ChangeName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Association name cannot be empty.", nameof(name));
@@ -38,7 +38,7 @@ namespace AssociationsClean.Domain.Features.Associations
             Name = name;
         }
 
-        private void ChangeDescription(string description)
+        public void ChangeDescription(string description)
         {
             if (string.IsNullOrWhiteSpace(description))
                 throw new ArgumentException("Association description cannot be empty.", nameof(description));
