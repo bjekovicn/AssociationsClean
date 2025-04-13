@@ -1,4 +1,6 @@
-﻿namespace AssociationsClean.Domain.Features.Categories
+﻿using AssociationsClean.Domain.Features.Associations;
+
+namespace AssociationsClean.Domain.Features.Categories
 {
     public sealed class Category
     {
@@ -11,6 +13,7 @@
             Name = name;
             Photo = photo;
         }
+        public ICollection<Association> Associations { get; private set; } = new List<Association>();
 
         private Category() { }
 
