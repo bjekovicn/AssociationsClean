@@ -1,6 +1,13 @@
+using Amazon.S3;
 using Associations.API.Extensions;
 using AssociationsClean.Application;
+using AssociationsClean.Application.Shared.Abstractions.Storage;
 using AssociationsClean.Infrastructure;
+using AssociationsClean.Infrastructure.Services;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,11 +17,30 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueCountLimit = 10000; 
+    options.MultipartBodyLengthLimit = 104857600; 
+});
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("AWS"));
 
 
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.HasFormContentType)
+    {
+        foreach (var key in context.Request.Form.Keys)
+        {
+            Console.WriteLine($"Form key: {key}");
+        }
+    }
+    await next();
+});
 
 
 // Configure the HTTP request pipeline.
@@ -28,6 +54,7 @@ if (app.Environment.IsDevelopment())
     });
     app.ApplyMigrations();
 }
+
 
 app.UseHttpsRedirection();
 

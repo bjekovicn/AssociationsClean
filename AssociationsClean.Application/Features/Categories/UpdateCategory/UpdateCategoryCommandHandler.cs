@@ -1,27 +1,27 @@
-﻿
-
-using AssociationsClean.Domain.Bookings;
-using AssociationsClean.Domain.Shared.Abstractions;
+﻿using AssociationsClean.Domain.Shared.Abstractions;
 using AssociationsClean.Application.Shared.Abstractions.Messaging;
-
+using AssociationsClean.Application.Shared.Abstractions.Storage;
+using AssociationsClean.Domain.Bookings;
 
 namespace AssociationsClean.Application.Features.Categories.UpdateCategory
 {
-    internal sealed class UpdateCategoryCommandHandler:ICommandHandler<UpdateCategoryCommand>
-      
+    internal sealed class UpdateCategoryCommandHandler : ICommandHandler<UpdateCategoryCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICategoryQueryRepository _queryRepository;
         private readonly ICategoryCommandRepository _commandRepository;
+        private readonly IStorageService _storageService;
 
         public UpdateCategoryCommandHandler(
             IUnitOfWork unitOfWork,
             ICategoryQueryRepository queryRepository,
-            ICategoryCommandRepository commandRepository)
+            ICategoryCommandRepository commandRepository,
+            IStorageService storageService)
         {
+            _unitOfWork = unitOfWork;
             _queryRepository = queryRepository;
             _commandRepository = commandRepository;
-            _unitOfWork = unitOfWork;
+            _storageService = storageService;
         }
 
         public async Task<Result> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
@@ -33,11 +33,24 @@ namespace AssociationsClean.Application.Features.Categories.UpdateCategory
                 return Result.Failure(CategoryErrors.NotFound);
             }
 
-            category.ChangeName(request.Name);
-            category.ChangePhoto(request.Photo);
+            // Update name only if it's not null/empty
+            if (!string.IsNullOrWhiteSpace(request.Name))
+            {
+                category.ChangeName(request.Name);
+            }
+
+            if (request.Photo is not null)
+            {
+                var file = request.Photo;
+                var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+
+                using var stream = file.OpenReadStream();
+                var newPhotoUrl = await _storageService.UploadFileAsync(stream, fileName, file.ContentType);
+
+                category.ChangePhoto(newPhotoUrl); 
+            }
 
             await _commandRepository.UpdateAsync(category);
-
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result.Success();

@@ -8,6 +8,12 @@ using AssociationsClean.Infrastructure.Features.Categories;
 using AssociationsClean.Application.Shared.Abstractions.Data;
 using AssociationsClean.Domain.Shared.Abstractions;
 using AssociationsClean.Application.Features.Categories;
+using Amazon.S3;
+using AssociationsClean.Application.Shared.Abstractions.Storage;
+using AssociationsClean.Infrastructure.Services;
+using Amazon;
+using Microsoft.Extensions.Options;
+
 
 namespace AssociationsClean.Infrastructure
 {
@@ -31,6 +37,20 @@ namespace AssociationsClean.Infrastructure
             services.AddScoped<ICategoryQueryRepository,CategoryQueryRepository>();
 
             services.AddScoped(sp=> (IUnitOfWork)sp.GetRequiredService<AppDbContext>());
+
+            //S3
+            services.AddSingleton<IAmazonS3>(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<S3Settings>>().Value;
+
+                var config = new AmazonS3Config 
+                { 
+                    RegionEndpoint = RegionEndpoint.GetBySystemName(settings.RegionName) 
+                };
+
+                return new AmazonS3Client(config);
+            });
+            services.AddScoped<IStorageService, S3StorageService>();
 
             return services;
         }

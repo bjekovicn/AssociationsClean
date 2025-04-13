@@ -9,12 +9,19 @@ using AssociationsClean.Application.Features.Categories.UpdateCategory;
 
 namespace AssociationsClean.API.Controllers
 {
+    /// <summary>
+    /// API controller for managing categories.
+    /// </summary>
     [ApiController]
     [Route("api/categories")]
     public class CategoryController : ControllerBase
     {
         private readonly IMediator _mediator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CategoryController"/> class.
+        /// </summary>
+        /// <param name="mediator">The mediator instance used for handling requests.</param>
         public CategoryController(IMediator mediator)
         {
             _mediator = mediator;
@@ -60,13 +67,14 @@ namespace AssociationsClean.API.Controllers
         /// <response code="201">Returns the newly created category</response>
         /// <response code="400">If the category data is invalid</response>
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryCommand command)
         {
             var result = await _mediator.Send(command);
 
             if (result.IsFailure) return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(CreateCategory), new { name = command.categoryName, photo = command.categoryPhoto }, command);
+            return Created();
         }
 
 
@@ -76,10 +84,11 @@ namespace AssociationsClean.API.Controllers
         /// <param name="id">The ID of the category to update</param>
         /// <param name="command">The data needed to update the category</param>
         /// <returns>A success response if the update was successful</returns>
-        /// <response code="200">If the category was successfully updated</response>
+        /// <response code="204">If the category was successfully updated</response>
         /// <response code="400">If the category data is invalid or IDs don't match</response>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryCommand command)
+        [HttpPatch("{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PatchCategory(int id, [FromForm] UpdateCategoryCommand command)
         {
             if (id != command.Id) return BadRequest("Category ID mismatch.");
 
@@ -87,8 +96,9 @@ namespace AssociationsClean.API.Controllers
 
             if (result.IsFailure) return BadRequest(result.Error);
 
-            return Ok();
+            return NoContent();
         }
+
 
         /// <summary>
         /// Deletes a specific category
