@@ -2,17 +2,19 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Amazon;
+using Amazon.S3;
+using Microsoft.Extensions.Options;
 using AssociationsClean.Infrastructure.Data;
 using AssociationsClean.Infrastructure.Persistence;
 using AssociationsClean.Infrastructure.Features.Categories;
 using AssociationsClean.Application.Shared.Abstractions.Data;
 using AssociationsClean.Domain.Shared.Abstractions;
 using AssociationsClean.Application.Features.Categories;
-using Amazon.S3;
 using AssociationsClean.Application.Shared.Abstractions.Storage;
 using AssociationsClean.Infrastructure.Services;
-using Amazon;
-using Microsoft.Extensions.Options;
+using AssociationsClean.Application.Features.Associations;
+using AssociationsClean.Infrastructure.Features.Associations;
 
 
 namespace AssociationsClean.Infrastructure
@@ -33,9 +35,15 @@ namespace AssociationsClean.Infrastructure
             services.AddSingleton<ISqlConnectionFactory>(_ =>
                 new SqlConnectionFactory(connectionString));
 
+            //REPOSITORIES
             services.AddScoped<ICategoryCommandRepository,CategoryCommandRepository>();
             services.AddScoped<ICategoryQueryRepository,CategoryQueryRepository>();
 
+            services.AddScoped<IAssociationCommandRepository, AssociationCommandRepository>();
+            services.AddScoped<IAssociationQueryRepository, AssociationQueryRepository>();
+
+
+            //DB
             services.AddScoped(sp=> (IUnitOfWork)sp.GetRequiredService<AppDbContext>());
 
             //S3

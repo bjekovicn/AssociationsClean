@@ -21,4 +21,11 @@
     <ProjectReference Include="..\AssociationsClean.Domain\AssociationsClean.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Associations\DeleteAssociation\" />
+    <Folder Include="Features\Associations\GetAllAssociations\" />
+    <Folder Include="Features\Associations\GetAssociationById\" />
+    <Folder Include="Features\Associations\UpdateAssociation\" />
+  </ItemGroup>
+
 </Project>
