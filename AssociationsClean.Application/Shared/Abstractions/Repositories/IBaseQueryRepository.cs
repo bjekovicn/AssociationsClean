@@ -5,5 +5,6 @@ namespace AssociationsClean.Application.Shared.Abstractions.Repositories
     {
         Task<T?> GetByIdAsync(int id);
         Task<IReadOnlyList<T>> GetAllAsync();
+        Task<bool> ExistsAsync(int id);
     }
 }

@@ -21,5 +21,9 @@ namespace AssociationsClean.Domain.Features.Associations
         public static readonly Error InvalidDescription = new(
             "Association.InvalidDescription",
             "The association description is invalid");
+
+        public static readonly Error CategoryNotFound = new(
+          "Association.CategoryNotFound",
+          "The category with the specified identifier was not found");
     }
 }
