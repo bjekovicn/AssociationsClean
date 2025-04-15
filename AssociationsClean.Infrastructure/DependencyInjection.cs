@@ -70,7 +70,11 @@ namespace AssociationsClean.Infrastructure
                     RegionEndpoint = RegionEndpoint.GetBySystemName(settings.RegionName) 
                 };
 
-                return new AmazonS3Client(config);
+
+                var accessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+                var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+
+                return new AmazonS3Client(accessKey,secretKey,config);
             });
             services.AddScoped<IStorageService, S3StorageService>();
 
