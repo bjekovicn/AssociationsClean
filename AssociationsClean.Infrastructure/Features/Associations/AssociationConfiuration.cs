@@ -17,7 +17,6 @@ namespace AssociationsClean.Infrastructure.Features.Associations
                 .HasMaxLength(255);
 
             builder.Property(a => a.Description)
-                .IsRequired()
                 .HasMaxLength(1000); 
 
             builder.Property(a => a.CategoryId)
