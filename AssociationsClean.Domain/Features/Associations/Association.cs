@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Text.Json.Serialization;
+using System.Xml.Linq;
 using AssociationsClean.Domain.Features.Categories;
 
 namespace AssociationsClean.Domain.Features.Associations
@@ -10,6 +11,7 @@ namespace AssociationsClean.Domain.Features.Associations
         public string? Description { get; private set; }
         public int CategoryId { get; private set; }
 
+        [JsonIgnore]
         public Category? Category { get; private set; }
 
         public Association(string name, string? description, int categoryId)

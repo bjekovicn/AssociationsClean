@@ -1,16 +1,22 @@
-using Amazon.S3;
+
 using Associations.API.Extensions;
 using AssociationsClean.Application;
-using AssociationsClean.Application.Shared.Abstractions.Storage;
 using AssociationsClean.Infrastructure;
 using AssociationsClean.Infrastructure.Services;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (!builder.Environment.IsDevelopment())
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    builder.WebHost.UseUrls($"http://*:{port}");
+}
+
+
+builder.Services.AddHealthChecks();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -30,18 +36,7 @@ builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("AWS"));
 
 var app = builder.Build();
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.HasFormContentType)
-    {
-        foreach (var key in context.Request.Form.Keys)
-        {
-            Console.WriteLine($"Form key: {key}");
-        }
-    }
-    await next();
-});
-
+app.UseHealthChecks("/health");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

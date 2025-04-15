@@ -1,4 +1,5 @@
-﻿using AssociationsClean.Domain.Features.Associations;
+﻿using System.Text.Json.Serialization;
+using AssociationsClean.Domain.Features.Associations;
 
 namespace AssociationsClean.Domain.Features.Categories
 {
@@ -13,6 +14,7 @@ namespace AssociationsClean.Domain.Features.Categories
             Name = name;
             Photo = photo;
         }
+        [JsonIgnore]
         public ICollection<Association> Associations { get; private set; } = new List<Association>();
 
         private Category() { }

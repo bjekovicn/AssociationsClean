@@ -26,8 +26,22 @@ namespace AssociationsClean.Infrastructure
               IConfiguration configuration)
         {
 
-            string connectionString = configuration.GetConnectionString("DefaultConnection") ??
-                                 throw new ArgumentNullException(nameof(configuration));
+            var host= Environment.GetEnvironmentVariable("PGHOST") ??
+                                    configuration.GetConnectionString("PGHOST");
+
+            var port= Environment.GetEnvironmentVariable("PGPORT") ??
+                                    configuration.GetConnectionString("PGPORT");
+
+            var username = Environment.GetEnvironmentVariable("PGUSER") ??
+                                    configuration.GetConnectionString("PGUSER");
+
+            var password= Environment.GetEnvironmentVariable("PGPASSWORD") ??
+                                    configuration.GetConnectionString("PGPASSWORD");
+
+            var database= Environment.GetEnvironmentVariable("PGDATABASE") ??
+                                    configuration.GetConnectionString("PGDATABASE");
+
+            var connectionString = ($"Host={host};Port={port};Database={database};Username={username};Password={password}");
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(connectionString));

@@ -1,0 +1,8 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "./AssociationsClean.API/Dockerfile"
+
+[deploy]
+startCommand = "dotnet AssociationsClean.API.dll"
+restartPolicyType = "always"
+healthcheckPath = "/health"
