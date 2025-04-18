@@ -33,6 +33,16 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("AWS"));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -50,6 +60,7 @@ if (app.Environment.IsDevelopment())
     app.ApplyMigrations();
 }
 
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 
