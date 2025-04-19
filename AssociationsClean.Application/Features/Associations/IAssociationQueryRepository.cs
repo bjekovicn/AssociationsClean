@@ -1,4 +1,5 @@
-﻿using AssociationsClean.Application.Shared.Abstractions.Repositories;
+﻿using AssociationsClean.Application.Features.Associations.GetRandomAssociationsByCategoryIds;
+using AssociationsClean.Application.Shared.Abstractions.Repositories;
 using AssociationsClean.Domain.Features.Associations;
 
 namespace AssociationsClean.Application.Features.Associations
@@ -7,7 +8,7 @@ namespace AssociationsClean.Application.Features.Associations
     {
         Task<bool> ExistsAsync(int categoryId,String associationName);
         Task<IReadOnlyList<Association>> GetByCategoryIdAsync(int categoryId);
-        Task<IReadOnlyList<Association>> GetRandomByCategoryIdsAsync(int count, List<int> categoryIds);
+        Task<IReadOnlyList<AssociationWithCategory>> GetRandomByCategoryIdsAsync(int count, List<int> categoryIds);
 
 
     }

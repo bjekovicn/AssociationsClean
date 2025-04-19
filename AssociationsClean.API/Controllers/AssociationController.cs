@@ -121,14 +121,14 @@ namespace AssociationsClean.API.Controllers
         /// Gets a random list of associations filtered by category IDs.
         /// </summary>
         /// <param name="count">The number of associations to retrieve.</param>
-        /// <param name="categoryIds">The list of category IDs to filter associations by.</param>
+        /// <param name="categoryId">The list of category IDs to filter associations by.</param>
         /// <returns>A list of randomly selected associations.</returns>
         /// <response code="200">Returns the random associations.</response>
         /// <response code="400">If the request parameters are invalid.</response>
         [HttpGet("random")]
-        public async Task<IActionResult> GetRandomAssociations([FromQuery] int count, [FromQuery] List<int> categoryIds)
+        public async Task<IActionResult> GetRandomAssociations([FromQuery] int count, [FromQuery] List<int> categoryId)
         {
-            var query = new GerRandomAssociationsByCategoryIdsQuery(count, categoryIds);
+            var query = new GerRandomAssociationsByCategoryIdsQuery(count, categoryId);
 
  
             var validator = new GetRandomAssociationsByCategoryIdsQueryValidator();

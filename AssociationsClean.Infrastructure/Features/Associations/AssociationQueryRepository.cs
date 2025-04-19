@@ -2,6 +2,7 @@
 using AssociationsClean.Application.Features.Associations;
 using AssociationsClean.Application.Shared.Abstractions.Data;
 using Dapper;
+using AssociationsClean.Application.Features.Associations.GetRandomAssociationsByCategoryIds;
 
 namespace AssociationsClean.Infrastructure.Features.Associations
 {
@@ -54,25 +55,33 @@ namespace AssociationsClean.Infrastructure.Features.Associations
             return await connection.QueryFirstOrDefaultAsync<Association>(sql, new { Id = id });
         }
 
-        public async Task<IReadOnlyList<Association>> GetRandomByCategoryIdsAsync(int count, List<int> categoryIds)
+        public async Task<IReadOnlyList<AssociationWithCategory>> GetRandomByCategoryIdsAsync(int count, List<int> categoryIds)
         {
             using var connection = _sqlConnectionFactory.CreateConnection();
 
             var sql = @"
-                SELECT * 
-                FROM public.""Associations"" 
-                WHERE ""CategoryId"" = ANY(@CategoryIds)
+                SELECT 
+                    a.""Id"", 
+                    a.""Name"", 
+                    a.""Description"",
+                    a.""CategoryId"", 
+                    c.""Name"" AS ""CategoryName""
+                FROM public.""Associations"" a
+                INNER JOIN public.""Categories"" c ON a.""CategoryId"" = c.""Id""
+                WHERE a.""CategoryId"" = ANY(@CategoryIds)
                 ORDER BY RANDOM()
                 LIMIT @Count;
             ";
 
-            var result = await connection.QueryAsync<Association>(sql, new
+            var parameters = new
             {
-                CategoryIds = categoryIds.ToArray(),
+                CategoryIds = categoryIds.ToArray(), 
                 Count = count
-            });
+            };
 
+            var result = await connection.QueryAsync<AssociationWithCategory>(sql, parameters);
             return result.AsList();
         }
+
     }
 }

@@ -6,7 +6,7 @@ using AssociationsClean.Application.Shared.Abstractions.Messaging;
 
 namespace AssociationsClean.Application.Features.Associations.GetRandomAssociationsByCategoryIds
 {
-    internal sealed class GetRandomAssociationsByCategoryIdsQyeryHandler : IQueryHandler<GerRandomAssociationsByCategoryIdsQuery, IReadOnlyList<Association>>
+    internal sealed class GetRandomAssociationsByCategoryIdsQyeryHandler : IQueryHandler<GerRandomAssociationsByCategoryIdsQuery, IReadOnlyList<AssociationWithCategory>>
     {
         private readonly IAssociationQueryRepository _associationQueryRepository;
 
@@ -17,10 +17,10 @@ namespace AssociationsClean.Application.Features.Associations.GetRandomAssociati
 
 
 
-        public async Task<Result<IReadOnlyList<Association>>> Handle(GerRandomAssociationsByCategoryIdsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IReadOnlyList<AssociationWithCategory>>> Handle(GerRandomAssociationsByCategoryIdsQuery request, CancellationToken cancellationToken)
         {
             var associations = await _associationQueryRepository.GetRandomByCategoryIdsAsync(request.count,request.categoryIds);
-            return Result.Success<IReadOnlyList<Association>>(associations);
+            return Result.Success<IReadOnlyList<AssociationWithCategory>>(associations);
         }
     }
 }
