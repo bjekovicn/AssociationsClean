@@ -55,9 +55,11 @@ namespace AssociationsClean.Infrastructure.Features.Associations
             return await connection.QueryFirstOrDefaultAsync<Association>(sql, new { Id = id });
         }
 
-        public async Task<IReadOnlyList<AssociationWithCategory>> GetRandomByCategoryIdsAsync(int count, List<int> categoryIds)
+        public async Task<IReadOnlyList<AssociationWithCategory>> GetRandomByCategoryIdsAsync(int count, List<int>? categoryIds)
         {
             using var connection = _sqlConnectionFactory.CreateConnection();
+
+            var useAllCategories = categoryIds == null || categoryIds.Count == 0;
 
             var sql = @"
                 SELECT 
@@ -68,20 +70,28 @@ namespace AssociationsClean.Infrastructure.Features.Associations
                     c.""Name"" AS ""CategoryName""
                 FROM public.""Associations"" a
                 INNER JOIN public.""Categories"" c ON a.""CategoryId"" = c.""Id""
-                WHERE a.""CategoryId"" = ANY(@CategoryIds)
+                /**where**/
                 ORDER BY RANDOM()
                 LIMIT @Count;
             ";
 
-            var parameters = new
-            {
-                CategoryIds = categoryIds.ToArray(), 
-                Count = count
-            };
+            var builder = new SqlBuilder();
 
-            var result = await connection.QueryAsync<AssociationWithCategory>(sql, parameters);
+            if (!useAllCategories)
+            {
+                builder.Where(@"a.""CategoryId"" = ANY(@CategoryIds)");
+            }
+
+            var template = builder.AddTemplate(sql, new
+            {
+                CategoryIds = categoryIds?.ToArray() ?? Array.Empty<int>(),
+                Count = count
+            });
+
+            var result = await connection.QueryAsync<AssociationWithCategory>(template.RawSql, template.Parameters);
             return result.AsList();
         }
+
 
     }
 }
