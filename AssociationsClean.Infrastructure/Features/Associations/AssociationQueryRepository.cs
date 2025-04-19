@@ -37,6 +37,15 @@ namespace AssociationsClean.Infrastructure.Features.Associations
             return result.AsList();
         }
 
+        public async Task<IReadOnlyList<Association>> GetByCategoryIdAsync(int categoryId)
+        {
+            using var connection = _sqlConnectionFactory.CreateConnection();
+            var sql = "SELECT * FROM public.\"Associations\" WHERE \"CategoryId\" = @CategoryId";
+
+            var result = await connection.QueryAsync<Association>(sql, new { CategoryId = categoryId });
+            return result.AsList();
+        }
+
         public async Task<Association?> GetByIdAsync(int id)
         {
             using var connection = _sqlConnectionFactory.CreateConnection();
