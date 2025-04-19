@@ -6,7 +6,7 @@ using AssociationsClean.Application.Features.Associations.GetAllAssociations;
 using AssociationsClean.Application.Features.Associations.CreateAssociation;
 using AssociationsClean.Application.Features.Associations.DeleteAssociation;
 using AssociationsClean.Application.Features.Associations.UpdateAssociation;
-using AssociationsClean.Application.Features.Associations.GetAsociationsByCategory;
+using AssociationsClean.Application.Features.Associations.GetRandomAssociationsByCategoryIds;
 
 namespace AssociationsClean.API.Controllers
 {
@@ -117,6 +117,34 @@ namespace AssociationsClean.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Gets a random list of associations filtered by category IDs.
+        /// </summary>
+        /// <param name="count">The number of associations to retrieve.</param>
+        /// <param name="categoryIds">The list of category IDs to filter associations by.</param>
+        /// <returns>A list of randomly selected associations.</returns>
+        /// <response code="200">Returns the random associations.</response>
+        /// <response code="400">If the request parameters are invalid.</response>
+        [HttpGet("random")]
+        public async Task<IActionResult> GetRandomAssociations([FromQuery] int count, [FromQuery] List<int> categoryIds)
+        {
+            var query = new GerRandomAssociationsByCategoryIdsQuery(count, categoryIds);
+
  
+            var validator = new GetRandomAssociationsByCategoryIdsQueryValidator();
+            var validationResult = await validator.ValidateAsync(query);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
+            var result = await _mediator.Send(query);
+
+            return Ok(result.Value);
+        }
+
+
+
     }
 }

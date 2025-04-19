@@ -53,5 +53,26 @@ namespace AssociationsClean.Infrastructure.Features.Associations
 
             return await connection.QueryFirstOrDefaultAsync<Association>(sql, new { Id = id });
         }
+
+        public async Task<IReadOnlyList<Association>> GetRandomByCategoryIdsAsync(int count, List<int> categoryIds)
+        {
+            using var connection = _sqlConnectionFactory.CreateConnection();
+
+            var sql = @"
+                SELECT * 
+                FROM public.""Associations"" 
+                WHERE ""CategoryId"" = ANY(@CategoryIds)
+                ORDER BY RANDOM()
+                LIMIT @Count;
+            ";
+
+            var result = await connection.QueryAsync<Association>(sql, new
+            {
+                CategoryIds = categoryIds.ToArray(),
+                Count = count
+            });
+
+            return result.AsList();
+        }
     }
 }
