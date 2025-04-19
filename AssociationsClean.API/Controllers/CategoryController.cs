@@ -6,6 +6,7 @@ using AssociationsClean.Application.Features.Categories.GetAllCategories;
 using AssociationsClean.Application.Features.Categories.CreateCategory;
 using AssociationsClean.Application.Features.Categories.DeleteCategory;
 using AssociationsClean.Application.Features.Categories.UpdateCategory;
+using AssociationsClean.Application.Features.Associations.GetAsociationsByCategory;
 
 namespace AssociationsClean.API.Controllers
 {
@@ -116,6 +117,21 @@ namespace AssociationsClean.API.Controllers
             if (result.IsFailure) return NotFound(result.Error);
 
             return NoContent(); 
+        }
+
+        /// <summary>
+        /// Gets all associations by a specific category ID.
+        /// </summary>
+        /// <param name="id">The ID of the category for which to retrieve associations.</param>
+        /// <returns>A list of associations.</returns>
+        /// <response code="200">Returns the list of associations</response>
+        /// <response code="400">If the category ID is invalid or associations cannot be retrieved</response>
+
+        [HttpGet("{id}/associations")]
+        public async Task<IActionResult> GetByCategoryId(int id)
+        {
+            var result = await _mediator.Send(new GetAssociationsByCategoryQuery(id));
+            return Ok(result.Value);
         }
     }
 }

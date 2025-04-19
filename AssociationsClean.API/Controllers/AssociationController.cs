@@ -117,19 +117,6 @@ namespace AssociationsClean.API.Controllers
             return NoContent();
         }
 
-        /// <summary>
-        /// Gets all associations by a specific category ID.
-        /// </summary>
-        /// <param name="categoryId">The ID of the category for which to retrieve associations.</param>
-        /// <returns>A list of associations.</returns>
-        /// <response code="200">Returns the list of associations</response>
-        /// <response code="400">If the category ID is invalid or associations cannot be retrieved</response>
-
-        [HttpGet("categories/{categoryId}/associations")]
-        public async Task<IActionResult> GetByCategoryId(int categoryId)
-        {
-            var result = await _mediator.Send(new GetAssociationsByCategoryQuery(categoryId));
-            return Ok(result.Value);
-        }
+ 
     }
 }
