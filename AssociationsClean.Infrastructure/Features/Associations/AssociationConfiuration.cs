@@ -14,7 +14,8 @@ namespace AssociationsClean.Infrastructure.Features.Associations
 
             builder.Property(a => a.Name)
                 .IsRequired()
-                .HasMaxLength(255);
+                .HasMaxLength(255)
+                .HasColumnType("citext"); ;
 
             builder.Property(a => a.Description)
                 .HasMaxLength(1000); 
