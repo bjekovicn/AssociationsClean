@@ -9,14 +9,11 @@ namespace AssociationsClean.Application.Features.Associations.GetRandomAssociati
     internal sealed class GetRandomAssociationsByCategoriesQyeryHandler : IQueryHandler<GetRandomAssociationsByCategoriesQuery, IReadOnlyList<AssociationWithCategory>>
     {
         private readonly IAssociationQueryRepository _associationQueryRepository;
-        private readonly IAssociationHistoryQueryRepository _associationHistoryQueryRepository;
 
         public GetRandomAssociationsByCategoriesQyeryHandler(
-            IAssociationQueryRepository associationQueryRepository, 
-            IAssociationHistoryQueryRepository associationHistoryQueryRepository)
+            IAssociationQueryRepository associationQueryRepository)
         {
             _associationQueryRepository = associationQueryRepository;
-            _associationHistoryQueryRepository = associationHistoryQueryRepository;
         }
 
 

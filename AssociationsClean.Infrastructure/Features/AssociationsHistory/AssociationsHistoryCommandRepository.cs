@@ -17,6 +17,7 @@ namespace AssociationsClean.Infrastructure.Features.Associations
             await _dbContext.Set<AssociationHistory>().AddAsync(entity);
         }
 
+
         public Task DeleteAsync(AssociationHistory entity)
         {
             _dbContext.Set<AssociationHistory>().Remove(entity);
@@ -27,6 +28,12 @@ namespace AssociationsClean.Infrastructure.Features.Associations
         {
             _dbContext.Set<AssociationHistory>().Update(entity);
             return Task.CompletedTask;
+        }
+
+        public async Task AddManyAsync(Guid userUuid, IEnumerable<int> associationIds)
+        {
+            var histories = associationIds.Select(id => new AssociationHistory(userUuid, id));
+            await _dbContext.Set<AssociationHistory>().AddRangeAsync(histories);
         }
     }
 }
