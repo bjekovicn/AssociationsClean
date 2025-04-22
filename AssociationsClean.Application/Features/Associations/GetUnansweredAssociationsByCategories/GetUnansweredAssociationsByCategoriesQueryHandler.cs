@@ -27,24 +27,47 @@ namespace AssociationsClean.Application.Features.Associations.GetUnansweredAssoc
         }
 
         public async Task<Result<IReadOnlyList<AssociationWithCategory>>> Handle(
-            GetUnansweredAssociationsByCategoriesQuery request,
-            CancellationToken cancellationToken)
+        GetUnansweredAssociationsByCategoriesQuery request,
+        CancellationToken cancellationToken)
         {
             var answeredIds = await _associationHistoryQueryRepository
                 .GetAnsweredAssociationIdsAsync(request.UserUuid);
 
-            var associations = await _associationQueryRepository
+
+            var unansweredAssociations = await _associationQueryRepository
                 .GetRandomUnansweredByCategoryIdsAsync(
                     request.Count,
                     request.CategoryIds,
                     answeredIds
                 );
 
-            var associationIds = associations.Select(a => a.Id).ToList();
-            await _associationHistoryCommandRepository.AddManyAsync(request.UserUuid,associationIds);
+            var result = unansweredAssociations.ToList();
 
+            if (result.Count < request.Count && answeredIds.Any())
+            {
+                int remainingCount = request.Count - result.Count;
+
+                var oldestAnsweredAssociations = await _associationHistoryQueryRepository
+                    .GetOldestAnsweredAssociationsByCategoryIdsAsync(
+                        request.UserUuid,
+                        request.CategoryIds,
+                        remainingCount
+                    );
+
+                // Delete the history entries for these associations
+                var oldestAnsweredAssociationIds = oldestAnsweredAssociations.Select(a => a.Id).ToList();
+                await _associationHistoryCommandRepository.DeleteManyAsync(
+                      request.UserUuid,
+                      oldestAnsweredAssociationIds);
+
+                result.AddRange(oldestAnsweredAssociations);
+            }
+
+            var associationIds = result.Select(a => a.Id).ToList();
+            await _associationHistoryCommandRepository.AddManyAsync(request.UserUuid, associationIds);
             await _unitOfWork.SaveChangesAsync();
-            return Result.Success<IReadOnlyList<AssociationWithCategory>>(associations);
+
+            return Result.Success<IReadOnlyList<AssociationWithCategory>>(result);
         }
     }
 }

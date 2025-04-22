@@ -1,5 +1,6 @@
 ﻿using AssociationsClean.Infrastructure.Persistence;
 using AssociationsClean.Application.Features.AssociationsHistory;
+using Microsoft.EntityFrameworkCore;
 
 namespace AssociationsClean.Infrastructure.Features.Associations
 {
@@ -34,6 +35,18 @@ namespace AssociationsClean.Infrastructure.Features.Associations
         {
             var histories = associationIds.Select(id => new AssociationHistory(userUuid, id));
             await _dbContext.Set<AssociationHistory>().AddRangeAsync(histories);
+        }
+
+        public async Task DeleteManyAsync(Guid userUuid, IEnumerable<int> associationIds)
+        {
+            var entries = await _dbContext.Set<AssociationHistory>()
+                .Where(ah => ah.UserUuid == userUuid && associationIds.Contains(ah.AssociationId))
+                .ToListAsync();
+
+            if (entries.Any())
+            {
+                _dbContext.Set<AssociationHistory>().RemoveRange(entries);
+            }
         }
     }
 }
