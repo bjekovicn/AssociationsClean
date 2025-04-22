@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using System.Xml.Linq;
 using AssociationsClean.Domain.Features.Categories;
 
 namespace AssociationsClean.Domain.Features.Associations

@@ -15,6 +15,7 @@ using AssociationsClean.Application.Shared.Abstractions.Storage;
 using AssociationsClean.Infrastructure.Services;
 using AssociationsClean.Application.Features.Associations;
 using AssociationsClean.Infrastructure.Features.Associations;
+using AssociationsClean.Application.Features.AssociationsHistory;
 
 
 namespace AssociationsClean.Infrastructure
@@ -55,6 +56,9 @@ namespace AssociationsClean.Infrastructure
 
             services.AddScoped<IAssociationCommandRepository, AssociationCommandRepository>();
             services.AddScoped<IAssociationQueryRepository, AssociationQueryRepository>();
+
+            services.AddScoped<IAssociationHistoryCommandRepository, AssociationsHistoryCommandRepository>();
+            services.AddScoped<IAssociationHistoryQueryRepository, AssociationsHistoryQueryRepository>();
 
 
             //DB

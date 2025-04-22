@@ -1,0 +1,40 @@
+﻿
+using AssociationsClean.Application.Features.Associations.GetRandomAssociationsByCategoryIds;
+using AssociationsClean.Application.Features.AssociationsHistory;
+using AssociationsClean.Application.Shared.Abstractions.Messaging;
+using AssociationsClean.Domain.Shared.Abstractions;
+
+namespace AssociationsClean.Application.Features.Associations.GetUnansweredAssociationsByCategoryIds
+{
+    internal class GetUnansweredAssociationsByCategoriesQueryHandler
+        : IQueryHandler<GetUnansweredAssociationsByCategoriesQuery, IReadOnlyList<AssociationWithCategory>>
+    {
+        private readonly IAssociationQueryRepository _associationQueryRepository;
+        private readonly IAssociationHistoryQueryRepository _associationHistoryQueryRepository;
+
+        public GetUnansweredAssociationsByCategoriesQueryHandler(
+            IAssociationQueryRepository associationQueryRepository,
+            IAssociationHistoryQueryRepository associationHistoryQueryRepository)
+        {
+            _associationQueryRepository = associationQueryRepository;
+            _associationHistoryQueryRepository = associationHistoryQueryRepository;
+        }
+
+        public async Task<Result<IReadOnlyList<AssociationWithCategory>>> Handle(
+            GetUnansweredAssociationsByCategoriesQuery request,
+            CancellationToken cancellationToken)
+        {
+            var answeredIds = await _associationHistoryQueryRepository
+                .GetAnsweredAssociationIdsAsync(request.UserUuid);
+
+            var associations = await _associationQueryRepository
+                .GetRandomUnansweredByCategoryIdsAsync(
+                    request.Count,
+                    request.CategoryIds,
+                    answeredIds
+                );
+
+            return Result.Success<IReadOnlyList<AssociationWithCategory>>(associations);
+        }
+    }
+}

@@ -9,6 +9,8 @@ namespace AssociationsClean.Application.Features.Associations
         Task<bool> ExistsAsync(int categoryId,String associationName);
         Task<IReadOnlyList<Association>> GetByCategoryIdAsync(int categoryId);
         Task<IReadOnlyList<AssociationWithCategory>> GetRandomByCategoryIdsAsync(int count, List<int> categoryIds);
+        Task<IReadOnlyList<AssociationWithCategory>> GetRandomUnansweredByCategoryIdsAsync(int count, List<int>? categoryIds, IReadOnlyList<int> answeredIds);
+
 
 
     }
