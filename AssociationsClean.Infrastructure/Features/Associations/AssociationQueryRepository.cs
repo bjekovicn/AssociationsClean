@@ -92,6 +92,50 @@ namespace AssociationsClean.Infrastructure.Features.Associations
             return result.AsList();
         }
 
+        public async Task<IReadOnlyList<AssociationWithCategory>> GetRandomUnansweredByCategoryIdsAsync(int count, List<int>? categoryIds, IReadOnlyList<int> answeredIds)
+        {
+            using var connection = _sqlConnectionFactory.CreateConnection();
+
+            var useAllCategories = categoryIds == null || categoryIds.Count == 0;
+            var hasAnsweredIds = answeredIds is { Count: > 0 };
+
+            var sql = @"
+                SELECT 
+                    a.""Id"", 
+                    a.""Name"", 
+                    a.""Description"",
+                    a.""CategoryId"", 
+                    c.""Name"" AS ""CategoryName""
+                FROM public.""Associations"" a
+                INNER JOIN public.""Categories"" c ON a.""CategoryId"" = c.""Id""
+                /**where**/
+                ORDER BY RANDOM()
+                LIMIT @Count;
+            ";
+
+            var builder = new SqlBuilder();
+
+            if (!useAllCategories)
+            {
+                builder.Where(@"a.""CategoryId"" = ANY(@CategoryIds)");
+            }
+
+            if (hasAnsweredIds)
+            {
+                builder.Where(@"a.""Id"" != ALL(@AnsweredIds)");
+            }
+
+            var template = builder.AddTemplate(sql, new
+            {
+                CategoryIds = categoryIds?.ToArray() ?? Array.Empty<int>(),
+                AnsweredIds = answeredIds.ToArray(),
+                Count = count
+            });
+
+            var result = await connection.QueryAsync<AssociationWithCategory>(template.RawSql, template.Parameters);
+            return result.AsList();
+        }
+
 
     }
 }

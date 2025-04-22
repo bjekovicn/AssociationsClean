@@ -7,6 +7,7 @@ using AssociationsClean.Application.Features.Associations.CreateAssociation;
 using AssociationsClean.Application.Features.Associations.DeleteAssociation;
 using AssociationsClean.Application.Features.Associations.UpdateAssociation;
 using AssociationsClean.Application.Features.Associations.GetRandomAssociationsByCategoryIds;
+using AssociationsClean.Application.Features.Associations.GetUnansweredAssociationsByCategoryIds;
 
 namespace AssociationsClean.API.Controllers
 {
@@ -122,16 +123,17 @@ namespace AssociationsClean.API.Controllers
         /// </summary>
         /// <param name="count">The number of associations to retrieve.</param>
         /// <param name="categoryId">The list of category IDs to filter associations by.</param>
+        /// <param name="userUuid">The unique identifier of the user to filter the associations by.</param>
         /// <returns>A list of randomly selected associations.</returns>
         /// <response code="200">Returns the random associations.</response>
         /// <response code="400">If the request parameters are invalid.</response>
         [HttpGet("random")]
-        public async Task<IActionResult> GetRandomAssociations([FromQuery] int count, [FromQuery] List<int> categoryId)
+        public async Task<IActionResult> GetRandomAssociations([FromQuery] int count, [FromQuery] List<int> categoryId, [FromHeader] Guid userUuid)
         {
-            var query = new GerRandomAssociationsByCategoryIdsQuery(count, categoryId);
+            var query = new GetUnansweredAssociationsByCategoriesQuery(userUuid,count, categoryId);
 
  
-            var validator = new GetRandomAssociationsByCategoryIdsQueryValidator();
+            var validator = new GetUnansweredAssociationsByCategoriesValidator();
             var validationResult = await validator.ValidateAsync(query);
 
             if (!validationResult.IsValid)
