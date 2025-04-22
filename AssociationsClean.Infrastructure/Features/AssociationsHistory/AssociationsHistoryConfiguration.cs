@@ -18,6 +18,9 @@ namespace AssociationsClean.Infrastructure.Features.Associations
             builder.Property(ah => ah.AssociationId)
                 .IsRequired();
 
+            builder.Property(ah=>ah.AnsweredCorrectly)
+                .IsRequired();
+
             builder.Property(ah => ah.AnsweredAt)
                 .IsRequired();
 

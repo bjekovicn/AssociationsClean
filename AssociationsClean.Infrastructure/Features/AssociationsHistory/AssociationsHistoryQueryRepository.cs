@@ -1,5 +1,6 @@
 ﻿using AssociationsClean.Application.Features.Associations.GetRandomAssociationsByCategoryIds;
 using AssociationsClean.Application.Features.AssociationsHistory;
+using AssociationsClean.Application.Features.AssociationsHistory.GetAnsweredAssociations;
 using AssociationsClean.Application.Shared.Abstractions.Data;
 using Dapper;
 
@@ -27,24 +28,38 @@ namespace AssociationsClean.Infrastructure.Features.Associations
             return result.AsList();
         }
 
-        public async Task<IReadOnlyList<AssociationWithCategory>> GetOldestAnsweredAssociationsByCategoryIdsAsync(Guid userUuid, IEnumerable<int> categoryIds, int count)
+        public async Task<List<AnsweredAssociation>> GetAnsweredAssociationsWithDetailsAsync(Guid userUuid)
         {
             using var connection = _sqlConnectionFactory.CreateConnection();
 
+            var sql = @"
+                SELECT ah.""AssociationId"", a.""Name"" as ""AssociationName"", ah.""AnsweredCorrectly"", ah.""AnsweredAt""
+                FROM public.""AssociationsHistory"" ah
+                JOIN public.""Associations"" a ON a.""Id"" = ah.""AssociationId""
+                WHERE ah.""UserUuid"" = @UserUuid
+                ORDER BY ah.""AnsweredAt"" DESC";
+
+            var result = await connection.QueryAsync<AnsweredAssociation>(sql, new { UserUuid = userUuid });
+            return result.AsList();
+        }
+
+        public async Task<IReadOnlyList<AssociationWithCategory>> GetOldestAnsweredAssociationsByCategoryIdsAsync(Guid userUuid, IEnumerable<int> categoryIds, int count)
+        {
+            using var connection = _sqlConnectionFactory.CreateConnection();
             var sql = @"
                 SELECT a.""Id"", a.""Description"", a.""CategoryId"", c.""Name"" as ""CategoryName""
                 FROM public.""Associations"" a
                 JOIN public.""Categories"" c ON a.""CategoryId"" = c.""Id""
                 JOIN public.""AssociationsHistory"" ah ON a.""Id"" = ah.""AssociationId""
                 WHERE ah.""UserUuid"" = @UserUuid
-                AND (@CategoryIds::int[] IS NULL OR a.""CategoryId"" = ANY(@CategoryIds))
+                AND (cardinality(@CategoryIds) = 0 OR a.""CategoryId"" = ANY(@CategoryIds))
                 ORDER BY ah.""AnsweredAt"" ASC
                 LIMIT @Count";
 
             var parameters = new
             {
                 UserUuid = userUuid,
-                CategoryIds = categoryIds.ToArray(),
+                CategoryIds = categoryIds?.ToArray() ?? Array.Empty<int>(),
                 Count = count
             };
 

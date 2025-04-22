@@ -64,7 +64,6 @@ namespace AssociationsClean.Application.Features.Associations.GetUnansweredAssoc
             }
 
             var associationIds = result.Select(a => a.Id).ToList();
-            await _associationHistoryCommandRepository.AddManyAsync(request.UserUuid, associationIds);
             await _unitOfWork.SaveChangesAsync();
 
             return Result.Success<IReadOnlyList<AssociationWithCategory>>(result);

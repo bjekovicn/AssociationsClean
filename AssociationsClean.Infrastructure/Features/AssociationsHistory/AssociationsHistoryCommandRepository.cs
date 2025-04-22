@@ -1,6 +1,7 @@
 ﻿using AssociationsClean.Infrastructure.Persistence;
 using AssociationsClean.Application.Features.AssociationsHistory;
 using Microsoft.EntityFrameworkCore;
+using AssociationsClean.Domain.Features.Associations;
 
 namespace AssociationsClean.Infrastructure.Features.Associations
 {
@@ -31,9 +32,9 @@ namespace AssociationsClean.Infrastructure.Features.Associations
             return Task.CompletedTask;
         }
 
-        public async Task AddManyAsync(Guid userUuid, IEnumerable<int> associationIds)
+        public async Task AddManyAsync(Guid userUuid, IEnumerable<(int AssociationId, bool AnsweredCorrectly)> associations)
         {
-            var histories = associationIds.Select(id => new AssociationHistory(userUuid, id));
+            var histories = associations.Select(x => new AssociationHistory(userUuid, x.AssociationId, x.AnsweredCorrectly));
             await _dbContext.Set<AssociationHistory>().AddRangeAsync(histories);
         }
 

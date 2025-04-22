@@ -8,6 +8,8 @@ using AssociationsClean.Application.Features.Associations.DeleteAssociation;
 using AssociationsClean.Application.Features.Associations.UpdateAssociation;
 using AssociationsClean.Application.Features.Associations.GetRandomAssociationsByCategoryIds;
 using AssociationsClean.Application.Features.Associations.GetUnansweredAssociationsByCategoryIds;
+using AssociationsClean.Application.Features.AssociationsHistory.AddManyAssociationHistories;
+using AssociationsClean.Application.Features.AssociationsHistory.GetAnsweredAssociations;
 
 namespace AssociationsClean.API.Controllers
 {
@@ -144,6 +146,41 @@ namespace AssociationsClean.API.Controllers
             var result = await _mediator.Send(query);
 
             return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Gets a list of answered associations for a specific user.
+        /// </summary>
+        /// <param name="userUuid">The unique identifier of the user</param>
+        /// <returns>A list of answered associations including the association name and whether it was answered correctly.</returns>
+        /// <response code="200">Returns the answered associations</response>
+        /// <response code="404">If the user has not answered any associations</response>
+        [HttpGet("answered")]
+        public async Task<IActionResult> GetAnsweredAssociations([FromHeader] Guid userUuid)
+        {
+            var query = new GetAnsweredAssociationsQuery(userUuid);
+            var result = await _mediator.Send(query);
+
+            if (result.IsFailure) return NotFound(result.Error);
+
+            return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Adds multiple association history records for a user.
+        /// </summary>
+        /// <param name="command">The command containing user UUID and association-answer pairs.</param>
+        /// <returns>Returns HTTP 201 if records are added successfully, or 400 for invalid input.</returns>
+        /// <response code="201">History entries successfully created.</response>
+        /// <response code="400">Invalid input or command failed.</response>
+        [HttpPost("answered/bulk")]
+        public async Task<IActionResult> AddManyHistoriesAsync([FromBody] AddManyAssociationHistoriesCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            if (result.IsFailure) return BadRequest(result.Error);
+
+            return Created();
         }
 
 
