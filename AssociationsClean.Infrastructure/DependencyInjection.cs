@@ -16,6 +16,7 @@ using AssociationsClean.Infrastructure.Services;
 using AssociationsClean.Application.Features.Associations;
 using AssociationsClean.Infrastructure.Features.Associations;
 using AssociationsClean.Application.Features.AssociationsHistory;
+using Microsoft.Extensions.Caching.Memory;
 
 
 namespace AssociationsClean.Infrastructure
@@ -50,9 +51,17 @@ namespace AssociationsClean.Infrastructure
             services.AddSingleton<ISqlConnectionFactory>(_ =>
                 new SqlConnectionFactory(connectionString));
 
+            services.AddMemoryCache();
+
             //REPOSITORIES
             services.AddScoped<ICategoryCommandRepository,CategoryCommandRepository>();
-            services.AddScoped<ICategoryQueryRepository,CategoryQueryRepository>();
+            services.AddScoped<CategoryQueryRepository>();
+            services.AddScoped<ICategoryQueryRepository>(provider =>
+                new CategoryQueryRepositoryCached(
+                    provider.GetRequiredService<CategoryQueryRepository>(),
+                    provider.GetRequiredService<IMemoryCache>()
+                )
+            );
 
             services.AddScoped<IAssociationCommandRepository, AssociationCommandRepository>();
             services.AddScoped<IAssociationQueryRepository, AssociationQueryRepository>();
