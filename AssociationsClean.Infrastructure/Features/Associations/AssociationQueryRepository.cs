@@ -96,43 +96,46 @@ namespace AssociationsClean.Infrastructure.Features.Associations
         {
             using var connection = _sqlConnectionFactory.CreateConnection();
 
-            var useAllCategories = categoryIds == null || categoryIds.Count == 0;
-            var hasAnsweredIds = answeredIds is { Count: > 0 };
-
-            var sql = @"
-                SELECT 
-                    a.""Id"", 
-                    a.""Name"", 
-                    a.""Description"",
-                    a.""CategoryId"", 
-                    c.""Name"" AS ""CategoryName""
+            // GET ONLY UNANSWERED ASSOCIATION IDS FOR PASSED CATEGORIES
+            var idsSql = @"
+                SELECT a.""Id""
                 FROM public.""Associations"" a
-                INNER JOIN public.""Categories"" c ON a.""CategoryId"" = c.""Id""
                 /**where**/
-                ORDER BY RANDOM()
-                LIMIT @Count;
             ";
 
             var builder = new SqlBuilder();
-
-            if (!useAllCategories)
-            {
+            if (categoryIds?.Count > 0)
                 builder.Where(@"a.""CategoryId"" = ANY(@CategoryIds)");
-            }
-
-            if (hasAnsweredIds)
-            {
+            if (answeredIds.Count > 0)
                 builder.Where(@"a.""Id"" != ALL(@AnsweredIds)");
+
+            var idsTemplate = builder.AddTemplate(
+                idsSql, 
+                new { 
+                    CategoryIds = categoryIds?.ToArray() ?? Array.Empty<int>(),
+                    AnsweredIds = answeredIds.ToArray()
+                });
+
+            var resultIDs = await connection.QueryAsync<int>(idsTemplate.RawSql, idsTemplate.Parameters);
+            var allCandidateIds= resultIDs.ToList();
+
+            if (!allCandidateIds.Any())
+            { 
+                return new List<AssociationWithCategory>();
             }
 
-            var template = builder.AddTemplate(sql, new
-            {
-                CategoryIds = categoryIds?.ToArray() ?? Array.Empty<int>(),
-                AnsweredIds = answeredIds.ToArray(),
-                Count = count
-            });
+            // SHUFFLE IDS AND GET FULL ASSOCIATIONS DATA
+            var random = new Random();
+            var pickedIds = allCandidateIds.OrderBy(x => random.Next()).Take(count).ToArray();
 
-            var result = await connection.QueryAsync<AssociationWithCategory>(template.RawSql, template.Parameters);
+            var sql = @"
+                SELECT a.""Id"", a.""Name"", a.""Description"", a.""CategoryId"", c.""Name"" as ""CategoryName""
+                FROM public.""Associations"" a
+                INNER JOIN public.""Categories"" c ON a.""CategoryId"" = c.""Id""
+                WHERE a.""Id"" = ANY(@PickedIds)
+            ";
+
+            var result = await connection.QueryAsync<AssociationWithCategory>(sql, new { PickedIds = pickedIds });
             return result.AsList();
         }
 
