@@ -1,7 +1,7 @@
 ﻿using AssociationsClean.Infrastructure.Persistence;
 using AssociationsClean.Application.Features.AssociationsHistory;
 using Microsoft.EntityFrameworkCore;
-using AssociationsClean.Domain.Features.Associations;
+using EFCore.BulkExtensions;
 
 namespace AssociationsClean.Infrastructure.Features.Associations
 {
@@ -35,7 +35,7 @@ namespace AssociationsClean.Infrastructure.Features.Associations
         public async Task AddManyAsync(Guid userUuid, IEnumerable<(int AssociationId, bool AnsweredCorrectly)> associations)
         {
             var histories = associations.Select(x => new AssociationHistory(userUuid, x.AssociationId, x.AnsweredCorrectly));
-            await _dbContext.Set<AssociationHistory>().AddRangeAsync(histories);
+            await _dbContext.BulkInsertAsync(histories);
         }
 
         public async Task DeleteManyAsync(Guid userUuid, IEnumerable<int> associationIds)
@@ -46,7 +46,7 @@ namespace AssociationsClean.Infrastructure.Features.Associations
 
             if (entries.Any())
             {
-                _dbContext.Set<AssociationHistory>().RemoveRange(entries);
+                await _dbContext.BulkDeleteAsync(entries);
             }
         }
     }
