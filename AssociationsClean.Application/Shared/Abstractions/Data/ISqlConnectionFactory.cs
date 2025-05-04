@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace AssociationsClean.Application.Abstractions.Data;
+namespace AssociationsClean.Application.Shared.Abstractions.Data;
 
 public interface ISqlConnectionFactory
 {

@@ -1,9 +1,10 @@
-﻿using AssociationsClean.Infrastructure.Persistence;
+﻿using AssociationsClean.API.Middleware;
+using AssociationsClean.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Associations.API.Extensions
 {
-    public static class ApplicationBuilderExtensions
+    internal static class ApplicationBuilderExtensions
     {
         public static void ApplyMigrations(this IApplicationBuilder app)
         {
@@ -13,5 +14,11 @@ namespace Associations.API.Extensions
 
             dbContext.Database.Migrate();
         }
+
+        public static void UseCustomExceptionHandler(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+        }
     }
+
 }
