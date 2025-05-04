@@ -6,7 +6,6 @@ namespace AssociationsClean.Application.Features.Associations.GetUnansweredAssoc
 {
     public sealed record GetUnansweredAssociationsByCategoriesQuery(
         Guid UserUuid,
-        int Count,
         List<int> CategoryIds
     ) : IQuery<IReadOnlyList<AssociationWithCategory>>;
 }
