@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Serilog.Context;
 using Microsoft.Extensions.Logging;
-
 using AssociationsClean.Domain.Shared.Abstractions;
 
 namespace AssociationsClean.Application.Abstractions.Behaviors;
+
 
 internal sealed class LoggingBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
@@ -15,7 +15,7 @@ internal sealed class LoggingBehavior<TRequest, TResponse>
 
     public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<TResponse> Handle(
@@ -23,11 +23,10 @@ internal sealed class LoggingBehavior<TRequest, TResponse>
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        string requestName = request.GetType().Name;
+        string requestName = request?.GetType().Name ?? "Unknown";
 
         try
         {
-            _logger.LogInformation("Executing request {RequestName}", requestName);
 
             TResponse result = await next();
 
@@ -37,7 +36,7 @@ internal sealed class LoggingBehavior<TRequest, TResponse>
             }
             else
             {
-                using (LogContext.PushProperty("Error", result.Error, true))
+                using (LogContext.PushProperty("Error", result.Error, destructureObjects: true))
                 {
                     _logger.LogError("Request {RequestName} processed with error", requestName);
                 }
@@ -47,8 +46,10 @@ internal sealed class LoggingBehavior<TRequest, TResponse>
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Request {RequestName} processing failed", requestName);
-
+            using (LogContext.PushProperty("Exception", exception, destructureObjects: true))
+            {
+                _logger.LogError(exception, "Request {RequestName} processing failed", requestName);
+            }
             throw;
         }
     }
