@@ -26,6 +26,7 @@ namespace AssociationsClean.Application.Features.Associations.GetUnansweredAssoc
             _associationHistoryCommandRepository = associationHistoryCommandRepository; 
         }
 
+        private int _count = 20;
         public async Task<Result<IReadOnlyList<AssociationWithCategory>>> Handle(
         GetUnansweredAssociationsByCategoriesQuery request,
         CancellationToken cancellationToken)
@@ -36,16 +37,16 @@ namespace AssociationsClean.Application.Features.Associations.GetUnansweredAssoc
 
             var unansweredAssociations = await _associationQueryRepository
                 .GetRandomUnansweredByCategoryIdsAsync(
-                    request.Count,
+                    _count,
                     request.CategoryIds,
                     answeredIds
                 );
 
             var result = unansweredAssociations.ToList();
 
-            if (result.Count < request.Count && answeredIds.Any())
+            if (result.Count < _count && answeredIds.Any())
             {
-                int remainingCount = request.Count - result.Count;
+                int remainingCount = _count - result.Count;
 
                 var oldestAnsweredAssociations = await _associationHistoryQueryRepository
                     .GetOldestAnsweredAssociationsByCategoryIdsAsync(
