@@ -32,7 +32,7 @@ namespace AssociationsClean.Infrastructure.Features.Categories
 
             var categories = await _decorated.GetAllAsync();
 
-            _memoryCache.Set(AllCategoriesCacheKey, categories, TimeSpan.FromDays(1));
+            _memoryCache.Set(AllCategoriesCacheKey, categories);
 
             return categories;
         }
@@ -50,7 +50,7 @@ namespace AssociationsClean.Infrastructure.Features.Categories
 
             if (category != null)
             {
-                _memoryCache.Set(cacheKey, category, TimeSpan.FromDays(1));
+                _memoryCache.Set(cacheKey, category);
             }
 
             return category;
